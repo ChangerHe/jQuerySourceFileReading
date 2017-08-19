@@ -278,11 +278,13 @@
                 this.toArray() :
 
                 // Return just the object
+                // 在传值为负的时候,就将负数加长度,
                 (num < 0 ? this[this.length + num] : this[num]);
         },
 
         // Take an array of elements and push it onto the stack
         // (returning the new matched element set)
+        // jQuery对象的入栈(stack)处理,
         pushStack: function(elems) {
 
             // Build a new jQuery matched element set
@@ -299,6 +301,7 @@
         // Execute a callback for every element in the matched set.
         // (You can seed the arguments with an array of args, but this is
         // only used internally.)
+        // 遍历集合
         each: function(callback, args) {
             return jQuery.each(this, callback, args);
         },
@@ -310,24 +313,30 @@
             return this;
         },
 
+        // 调用数组方法,选取类数组中需要的对象
         slice: function() {
             return this.pushStack(core_slice.apply(this, arguments));
         },
 
+        // 第一项,其实就是调用eq()方法
         first: function() {
             return this.eq(0);
         },
 
+        // 最后一项,其实就是调用eq()方法
         last: function() {
             return this.eq(-1);
         },
 
+        // 选择具体的某一个方法,底层就是一个入栈的操作,将指定的i进行判定,如果i为负,则将i与长度相加
+        // 返回匹配到的相应的元素,并压入栈顶
         eq: function(i) {
             var len = this.length,
                 j = +i + (i < 0 ? len : 0);
             return this.pushStack(j >= 0 && j < len ? [this[j]] : []);
         },
 
+        // 实例方法,其实还是调用了定义的自己的工具方法,
         map: function(callback) {
             return this.pushStack(jQuery.map(this, function(elem, i) {
                 return callback.call(elem, i, elem);
@@ -340,14 +349,19 @@
 
         // For internal use only.
         // Behaves like an Array's method, not like a jQuery method.
+        // 方法挂载到了对象上,作为内部使用的,但是不建议在外部使用
         push: core_push,
         sort: [].sort,
         splice: [].splice
     };
 
     // Give the init function the jQuery prototype for later instantiation
+    // 循环引用
     jQuery.fn.init.prototype = jQuery.fn;
 
+    // 扩展了静态方法jQuery.extend,实例方法jQuery.fn.extend
+    // extend()就是jQuery暴露出来的一种静态方法, 用于我们添加自己需要的插件进去
+    // 扩展实例方法和工具方法是不同的
     jQuery.extend = jQuery.fn.extend = function() {
         var options, name, src, copy, copyIsArray, clone,
             target = arguments[0] || {},

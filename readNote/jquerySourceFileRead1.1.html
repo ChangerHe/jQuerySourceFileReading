@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="jquery.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="box">111111</div>
+    <div>33333</div>
+    <div>33333</div>
+    <div>33333</div>
+    <div>33333</div>
+    <div>33333</div>
+    <span id="span">222222</span>
+    <script>
+        // 模拟出栈入栈的方法
+        // 使用end().可以实现找到栈底端的功能
+        $('#box').pushStack($("#span")).end().css('color', 'red')
+        $('div').slice(1, 3).css('background', 'orange')
+
+        // 扩展实例方法
+        $.extend({
+            aaa: function() {
+                alert(1)
+            },
+            bbb: function() {
+                alert(2)
+            }
+        })
+
+        // 扩展工具方法
+        $.fn.extend({
+            aaa: function() {
+                alert(3)
+            },
+            bbb: function() {
+                alert(4)
+            }
+        })
+
+        // 对工具方法和实例方法的调用,奇怪的是为什么使用了$.extend.aaa\,反倒不能执行了?
+        $.aaa();
+        $.bbb();
+        $.fn.aaa();
+        $.fn.bbb();
+        console.log($.extend()) // 为什么指向了Object?
+        console.log($.fn.extend()) // 为什么指向了Object?而且和$.extend()一模一样?
+    </script>
+
+</body>
+
+</html>
