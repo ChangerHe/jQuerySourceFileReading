@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="jquery.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+        console.log(Object.prototype.toString.call(new Date).slice(8, -1)) // 更佳的判断对象类型的方法
+        var a = 'aaa'
+        console.log($.type(a)) //string
+
+        console.log($.type({}))
+
+        console.log($.type(undefined))
+
+        console.log($.type(null))
+    </script>
+
+</body>
+
+</html>

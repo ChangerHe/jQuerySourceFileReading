@@ -16,16 +16,40 @@
 
     </ul>
     <div>
-        <h1></h1>
-        <h2></h2>
-        <h3></h3>
+        <h1>111</h1>
+        <h2>222</h2>
+        <h3>333</h3>
     </div>
     <script>
+        var box = document.getElementsByTagName('div')[0]
+        box.onclick = function(e) {
+            var b = e.getBoundingClientRect()
+            console.log(b)
+        }
         console.log($.expando)
 
+        // 注意当我们已交$的使用权时,$的移交是要在重新赋值之前的,如果在之后移交的话,其实那个时候就不再是原本JQ中的$了
         var Changer = $.noConflict()
         var $ = 3;
         console.log($)
+
+        // 还有一个情况jQuery也提供了解决方法,当$在引入jQuery库之前就已经被定义了的话
+        // 这个时候jQuery会将这个变量存储为以_$命名的内部变量,方便在之后调用.
+        // 既然noConflict是用来解决冲突的,那么自然原本的jQuery的命名空间也是可以被释放出来的
+
+        // 使用noConflict方法之后,就可以使用自己定义的名称调用jQuery了
+        // 当然这个时候,还是可以使用jQuery的
+        console.log(Changer("h1").html())
+        console.log(jQuery('h1').html())
+
+        // 当我们不想使用jQuery的时候,可以使用noConflict传值为true的方式,传值进去之后表示将jQuery这个方法名也同时进行更改
+        changer = Changer.noConflict(true);
+        console.log(changer)
+        console.log(changer('h2').html)
+            // console.log(jQuery('h2').html) // 此时这样使用jQuery,会报错
+
+        // 在jQuery中,其实ready相应的延迟加载,是和原生js中的一个api是有关系的 :   DOMContentLoaded()
+        // 此方法可以将js脚本在dom加载完之后就立即加载js脚本,加快了页面的渲染速度,而且可能这个时候仅仅是dom节点树加载完成了,相应的图片等都可能会没有下载完
     </script>
 
 </body>

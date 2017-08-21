@@ -377,7 +377,8 @@
     jQuery.extend = jQuery.fn.extend = function() {
         var options, name, src, copy, copyIsArray, clone,
             target = arguments[0] || {},
-            i = 1,
+            deep = target;
+        i = 1,
             length = arguments.length,
             deep = false;
 
@@ -461,6 +462,9 @@
         expando: "jQuery" + (core_version + Math.random()).replace(/\D/g, ""),
 
         // 处理变量的冲突问题,当全局出现另一个以$命名的变量时,可以使用noConflict方法转让$的使用权
+        // 对于deep,我们可以看一下这两行代码
+        // target = arguments[0] || {}      deep = target;
+        // 很明显,deep就是传入的第一个值而已,而且传入的值是一个布尔值
         noConflict: function(deep) {
 
             // 当全局的$都是jQuery的时候,则将全局下的$存储为私有
@@ -468,19 +472,23 @@
                 window.$ = _$;
             }
 
-            // 当
+            // 当deep,也就是传入的第一个值为true,而且这个时候jQuery在之前已经传值的时候,我们就把jQuery的内部值传给外部的jQuery
+            // 对于__jQuery 其实上面是有一行这样的代码的   __jQuery = window.jQuery
             if (deep && window.jQuery === jQuery) {
                 window.jQuery = _jQuery;
             }
 
+            // 将外部的jQuery进行返回,那么这个时候在外部就只有一个在外面定义的jQuery了
             return jQuery;
         },
 
         // Is the DOM ready to be used? Set to true once it occurs.
+        // DOM 的加载状态设置非否
         isReady: false,
 
         // A counter to track how many items to wait for before
         // the ready event fires. See #6781
+
         readyWait: 1,
 
         // Hold (or release) the ready event
@@ -493,6 +501,7 @@
         },
 
         // Handle when the DOM is ready
+        // 这其实是一个实例方法,不同于$(document).ready(functiom(){}) 中的对象方法
         ready: function(wait) {
 
             // Abort if there are pending holds or we're already ready
@@ -536,9 +545,13 @@
 
         type: function(obj) {
             if (obj == null) {
+                // 当obj为null的时候,返回的就是String,也就是转为字符串的对应值,避免了原生JS中返回Object的尴尬
                 return String(obj);
             }
             // Support: Safari <= 5.1 (functionish RegExp)
+            // 更加精确的匹配方法,其实是使用了Object.prototype.tuString()这样的一个方法,返回的是更加精确的类型判断值,比如:
+            // Object.prototype.toString.call([])   输出的值是[Object Array],当我们对其使用silice进行区分,也就是在后面再加上silce(8,-1)时,得到的就是精确匹配的值了
+            // class2type = {}   core_toString = class2type.toString,  由上面的源码可以看到,其实就是这个对象的类型
             return typeof obj === "object" || typeof obj === "function" ?
                 class2type[core_toString.call(obj)] || "object" :
                 typeof obj;
