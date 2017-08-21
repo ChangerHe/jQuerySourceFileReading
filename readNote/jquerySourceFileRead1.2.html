@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="jquery.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+        var a = {};
+        console.log($.extend(a, {
+            name: a
+        }))
+
+        var b = {
+            name: {
+                age: 30
+            }
+        }
+        var c = {
+            gender: {
+                any: 'mario'
+            }
+        }
+        console.log($.extend(true, b, c)) // 得到了一个深拷贝的对象,对象还对应着对象
+        b.name.age = 29;
+        console.log($.extend(true, b, c)) // 因为是进行的深拷贝,所以最终得到的值中,上面和下面打印出来的值是一样的,但是这是为什么
+        c.gender.any = "ChangerHe" // 那么现在问题又来了,当我在下面对其进行更改的时候,怎么就不生效了?
+
+        var d = 1;
+        console.log($.extend(d, a)) // 这种情况下得到的就是一个空的对象
+    </script>
+
+</body>
+
+</html>

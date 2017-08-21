@@ -362,6 +362,18 @@
     // 扩展了静态方法jQuery.extend,实例方法jQuery.fn.extend
     // extend()就是jQuery暴露出来的一种静态方法, 用于我们添加自己需要的插件进去
     // 扩展实例方法和工具方法是不同的
+    // 当我们写多个对象自变量的时候,后面的对象都是扩展到了第一个对象的身上
+    /**
+     * 以下方法的基本架构:
+     *  if(){}  看是不是深拷贝的情况
+     *  if(){}  看参数是否正确
+     *  if(){}  看是不是插件
+     *  for(){  可能有多个对象的情况
+     *      if(){}  防止循环引用
+     *      if(){}  深拷贝
+     *      else if(){}  浅拷贝
+     *  }
+     */
     jQuery.extend = jQuery.fn.extend = function() {
         var options, name, src, copy, copyIsArray, clone,
             target = arguments[0] || {},
@@ -370,6 +382,9 @@
             deep = false;
 
         // Handle a deep copy situation
+        // 处理深拷贝的情况
+        // 当target(目标值)为布尔值的时候  extend(true, a ,b)  这样的结构,则会被认为是深拷贝,.第一个参数作为布尔值,传入(当然,当我们将第二个布尔值设置为false的时候,为浅拷贝,为了浅拷贝而设置false,就没有很大的必要了,因为它默认就是浅拷贝)
+        // 将target从第二个参数开始看起,第二个参数才是真正要操作的值
         if (typeof target === "boolean") {
             deep = target;
             target = arguments[1] || {};
@@ -378,18 +393,23 @@
         }
 
         // Handle case when target is a string or something (possible in deep copy)
+        // 操作一些其他的情况,当target不是对象,而且不是一个函数的时候,则将其默认的变成一个空的对象
         if (typeof target !== "object" && !jQuery.isFunction(target)) {
             target = {};
         }
 
         // extend jQuery itself if only one argument is passed
+        // 当length等于i也就是当使用插件的情况下,因为不同的调用,this的指向是不同的,目的在于使用此判断对this的指向进行更改
+        // 其实,还是有点没懂~
         if (length === i) {
             target = this;
             --i;
         }
 
+        // 当存在多个对象的情况下
         for (; i < length; i++) {
             // Only deal with non-null/undefined values
+            // 当然,这些参数都是要有值的
             if ((options = arguments[i]) != null) {
                 // Extend the base object
                 for (name in options) {
@@ -397,17 +417,23 @@
                     copy = options[name];
 
                     // Prevent never-ending loop
+                    // 防止死循环
                     if (target === copy) {
+                        // continue的作用是为了避免目标值与拷贝值之间的循环引用关系一直继续下去,所以当target等于copy值的时候,就跳出此循环
                         continue;
                     }
 
                     // Recurse if we're merging plain objects or arrays
+                    // 当deep为true 且 copy有值, 且copy是一个对象或者数组,则进行下面的操作
                     if (deep && copy && (jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)))) {
+                        // 当 copyIsArray的时候,也就是当copy是一个数组的时候,copyIsArray在判断语句里面已经进行了定义
                         if (copyIsArray) {
                             copyIsArray = false;
+                            // src = target[name]; 目标值以name为下标的值,作为src, 当src是一个数组的时候,则返回src作为克隆对象,否则clone为空值
                             clone = src && jQuery.isArray(src) ? src : [];
 
                         } else {
+                            // 当src有值,且src是一个对象的时候,返回这个对象,否则返回一个空对象
                             clone = src && jQuery.isPlainObject(src) ? src : {};
                         }
 
@@ -425,16 +451,24 @@
         // Return the modified object
         return target;
     };
+    // 继承结束
 
+    // 括展的一些继承方法
     jQuery.extend({
         // Unique for each copy of jQuery on the page
+        // 最重要的作用还是生成版本号后的唯一字符串,作为之后的使用,这个方法一般都是在内部使用,当然,如果你需要,可以在文档中写
+        // $.expando  打印出来就可以看到这个随机字符串了
         expando: "jQuery" + (core_version + Math.random()).replace(/\D/g, ""),
 
+        // 处理变量的冲突问题,当全局出现另一个以$命名的变量时,可以使用noConflict方法转让$的使用权
         noConflict: function(deep) {
+
+            // 当全局的$都是jQuery的时候,则将全局下的$存储为私有
             if (window.$ === jQuery) {
                 window.$ = _$;
             }
 
+            // 当
             if (deep && window.jQuery === jQuery) {
                 window.jQuery = _jQuery;
             }

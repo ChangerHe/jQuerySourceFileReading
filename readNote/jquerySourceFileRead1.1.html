@@ -50,6 +50,22 @@
         $.fn.bbb();
         console.log($.extend()) // 为什么指向了Object?
         console.log($.fn.extend()) // 为什么指向了Object?而且和$.extend()一模一样?
+
+        var a = {};
+        var b = {
+            name: 'ChangerHe',
+            friends: {
+                a: 'someOne',
+                b: "anyOne"
+            }
+        }
+        a = {
+            name: 'aaa'
+        }
+        $.extend(a, b)
+        console.log(a, b)
+            // $.extend(true, a, b);
+            // console.log(a, b)
     </script>
 
 </body>
