@@ -38,6 +38,15 @@
         for (var a in Aaa.prototype) { // 遍历其原型方法,发现constructor上的函数,也就是其自身,是没有办法被遍历到的
             console.log(Aaa.prototype[a]) // 但是我们自己定义的aa方法,是可以被遍历到的
         }
+
+        // $.error('this is a wrong')
+
+        var a = '<as></as>'
+        var c = '<as>'
+        var b = /^<(\w+)\s*\/?>(?:<\/\1>|)$/
+        console.log(b.exec(a))
+        console.log(b.exec(c)) // ["<as>", "as", index: 0, input: "<as>"]
+            // 可以看到, 返回的第一个值是匹配到的值,第二个是匹配到的括号中的值,所以jQuery在匹配之后会有一个parese[1]的操作,目的就是取得这个标签的名称
     </script>
 
 </body>

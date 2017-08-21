@@ -605,6 +605,7 @@
             return true;
         },
 
+        // 简单地封装了error这个错误对象
         error: function(msg) {
             throw new Error(msg);
         },
@@ -613,26 +614,41 @@
         // context (optional): If specified, the fragment will be created in this context, defaults to document
         // keepScripts (optional): If true, will include scripts passed in the html string
         // 第二个是执行的上下文,第三个参数看参数的名称其实就懂了,第三个参数传入的是一个布尔值,如果为真,将会包含script标签的内容会被包含到这个方法中,而且因为这个方法属于函数声明,所以在最开始一百来行的时候就被调用了,因为一直没查到这个API,所以搜索了一下,居然在这里.
+        // 最后返回的是一个数组,将html的结构进行解析
         parseHTML: function(data, context, keepScripts) {
+            // 判断是不是一个字符串,不是则返回null
             if (!data || typeof data !== "string") {
                 return null;
             }
+
+            // 执行上下文,如果是布尔值的话,会认为执行上下文这个参数被省略,然后将执行上下文的这个布尔值传给第三个参数进行执行,执行上下文本身返回一个false
             if (typeof context === "boolean") {
                 keepScripts = context;
                 context = false;
             }
+            // 然后如果为false的时候,这里就将上下文指定为document
             context = context || document;
 
+            // 如果keepScripts为true,则scripts返回一个空数组,keepScripts其实就是表示你传入的值是否需要包含script标签的解析,需要的时候为true就好了
             var parsed = rsingleTag.exec(data),
                 scripts = !keepScripts && [];
 
             // Single tag
+            // 判断是不是一个单标签,也就是正则表达式rsingleTag = /^<(\w+)\s*\/?>(?:<\/\1>|)$/匹配到了值
+            // 那么,就调用上下文的createElement这个方法,添加这个标签,并将这个标签生成的数组
+            // 选取exec中得到的第二个元素,也就是括号括起来的部分,也就是这个标签里面的字符串,用来创建一个元素
             if (parsed) {
                 return [context.createElement(parsed[1])];
             }
 
+            // 这个内部是使用了document.createDocumentFragment 这样的创建文档碎片的方式进行参数的组合,组合成一个文档树,然后在后面,插入到相应的位置中
+            // 这种方法在现代浏览器中是可以略微提升性能的
+            // 但是,这种方法,在IE中,性能会降低
+            // 如果这个标签不是单标签,也就是上面的if判断没有执行,则函数不会返回,那么这个时候就会被认为是多标签
+            // 是多标签,则使用buildFragment方法进行标签对应数组的创建
             parsed = jQuery.buildFragment([data], context, scripts);
 
+            // 如果scripts为真,也就是keepScripts为true,则进行移除操作,
             if (scripts) {
                 jQuery(scripts).remove();
             }
