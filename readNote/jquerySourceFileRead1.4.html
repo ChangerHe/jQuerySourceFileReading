@@ -12,6 +12,9 @@
 <body>
 
     <script>
+        // 借用Object的原型中的toString方法,得到更加准确的数据类型
+        // 此方法是$.type()方法的简单实现
+
         console.log(Object.prototype.toString.call(new Date).slice(8, -1)) // 更佳的判断对象类型的方法
         var a = 'aaa'
         console.log($.type(a)) //string
@@ -21,6 +24,20 @@
         console.log($.type(undefined))
 
         console.log($.type(null))
+
+        // isPlainObject()  盘点是否为对象字面量,其实就是判断这个参数是不是对象而已
+        console.log($.isPlainObject(a))
+        console.log($.isPlainObject([]))
+        console.log($.isPlainObject({}))
+
+        function Aaa() {}
+        console.log(Aaa.prototype.constructor) // 其原型中的构造函数其实就是指的其本身
+        Aaa.prototype.aa = function() {
+                return 1
+            } // 我们在其原型上定义了aa这个方法
+        for (var a in Aaa.prototype) { // 遍历其原型方法,发现constructor上的函数,也就是其自身,是没有办法被遍历到的
+            console.log(Aaa.prototype[a]) // 但是我们自己定义的aa方法,是可以被遍历到的
+        }
     </script>
 
 </body>

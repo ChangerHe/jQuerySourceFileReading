@@ -555,9 +555,15 @@
             return typeof obj === "object" || typeof obj === "function" ?
                 class2type[core_toString.call(obj)] || "object" :
                 typeof obj;
+            // 上面返回值的增补解释,当obj是object类型的时候,其实原生JS中是object类型的有太多了,比如说日期类型,对象类型,数组类型,等等,那么它接下来就是进行了一个判断,当obj是一个函数或者是一个object的时候,就进行深层次的盘点,如果深层次判断出来还是object,则返回object,不是,则返回使用typeof 判断出来的值
+            // 增补: 其实class2type在后面是有一个对象类型的json数组的,以下是实现的方式,其实就是使用toString出来的方法作为键值对存储为json,然后将这个json对我们哦按点出来的值进行匹配,将结果输出,哇~  有点机智啊
+            // Populate the class2type map
+            // jQuery.each("Boolean Number String Function Array Date RegExp Object Error".split(" "), function(i, name) {
+            //     class2type["[object " + name + "]"] = name.toLowerCase();
+            // });
         },
 
-        // 判定是否为plain(清楚的)的对象
+        // 判断是否为对象字面量
         isPlainObject: function(obj) {
             // Not plain objects:
             // - Any object or value whose internal [[Class]] property is not "[object Object]"
@@ -572,7 +578,10 @@
             // The try/catch suppresses exceptions thrown when attempting to access
             // the "constructor" property of certain host objects, ie. |window.location|
             // https://bugzilla.mozilla.org/show_bug.cgi?id=814622
+            // 这里可能稍微难理解一些
             try {
+                //core_hasOwn = class2type.hasOwnProperty 这是前面有写到的,class2type 刚刚已经解释了.,就是一个存储了toString的结果值,并返回相应类型的json键值对
+                // 这样就很好理解了,core_hasOwn 就是用来判断
                 if (obj.constructor &&
                     !core_hasOwn.call(obj.constructor.prototype, "isPrototypeOf")) {
                     return false;
@@ -586,8 +595,10 @@
             return true;
         },
 
+        // 表示是否为空的Object, 如果为空,返回真,不为空,则返回假
         isEmptyObject: function(obj) {
             var name;
+            // 遍历的原理其实很简单,因为系统中自带的属性和方法一般会有一个defineProperty()的操作,定义了这个属性的isEnumerable()属性为假,也就是不能被枚举到,defineProperty这个属性还有一个特点就是,当我们将isEnumerable设置为false之后.就不能设置为true了
             for (name in obj) {
                 return false;
             }
