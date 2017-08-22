@@ -669,7 +669,7 @@
             }
 
             // Support: IE9
-            // 在IE9下的情况
+            // 在IE9下的情况  好像和一个bug有关
             try {
                 tmp = new DOMParser();
                 xml = tmp.parseFromString(data, "text/xml");
@@ -687,23 +687,34 @@
         noop: function() {},
 
         // Evaluates a script in a global context
+        // 用于在函数的执行上下文中创建全局变量
         globalEval: function(code) {
             var script,
                 indirect = eval;
 
+            // 进行空格缩进
             code = jQuery.trim(code);
 
             if (code) {
                 // If the code includes a valid, prologue position
                 // strict mode pragma, execute code by injecting a
                 // script tag into the document.
+                // 当处在全局变量的情况下,script标签是没有办法被正常解析的,所以这个时候,我们只能使用创建和插入节点的办法进行处理.
                 if (code.indexOf("use strict") === 1) {
+                    // 创建script节点
                     script = document.createElement("script");
+                    // 将script标签的节点内插入相应的清除掉了空格的字符串
                     script.text = code;
+                    // 在文档流的head里面插入相应的script标签,然后移除这个script标签,达到创建相应的全局变量的目的
                     document.head.appendChild(script).parentNode.removeChild(script);
                 } else {
                     // Otherwise, avoid the DOM node creation, insertion
                     // and removal by using an indirect global eval
+                    // 非全局模式下,就是直接使用的eval() 这个方法对相应的字符串进行的解析
+                    // 有一点要注意的是,为什么作者要把eval先存为一个变量,再调用这个变量呢?  这个问题在1.5里面我写了相应的实例进行解析
+                    // 主要原因是这样的,因为eval不仅仅是一个方法,也是一个保留字,当我们直接在函数作用域中使用eval的时候,其实这个时候eval相当于是一个关键字,这个关键字的作用域就是只在这个函数的局部作用域中的.
+                    // 当我们使用window.eval  或者使用参数指代eval 的时候,JS语法会认为我们应用的是eval这个函数
+                    // 大概原因是这样,其实我还是有点没太懂
                     indirect(code);
                 }
             }
@@ -711,11 +722,17 @@
 
         // Convert dashed to camelCase; used by the css and data modules
         // Microsoft forgot to hump their vendor prefix (#9572)
+        // 转驼峰方法,此方法虽然是内部使用方法,但是外部也可调用
         camelCase: function(string) {
+            //rmsPrefix = /^-ms-/,rdashAlpha = /-([\da-z])/gi, 
+            // fcamelCase = function(all, letter) return letter.toUpperCase();
+            // 看了上面的正则表达式和函数基本可以理解,就是当我们在标签中具有以-ms- 开头的标签的时候,会将其替换为ms- 这样的形式,因为IE下的机制不一样,首字母也要大写,所以存在这样的一个操作
             return string.replace(rmsPrefix, "ms-").replace(rdashAlpha, fcamelCase);
         },
 
+        // 是否为指定的节点名,这个方法也是内部使用方法,但是可以在外部调用
         nodeName: function(elem, name) {
+            // 因为每个浏览器的机制不同,也有可能name传入的不是想要的节点大小写的情况,所以后面就统一改成了小写形式
             return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
         },
 

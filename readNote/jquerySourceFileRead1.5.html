@@ -12,7 +12,7 @@
 <body>
 
     <script>
-        var a = ' {name: "changer"}'
+        var a = '{"name": "changer"}'
         console.log($.parseJSON(a))
 
         /**
@@ -21,9 +21,31 @@
          * 
          *      
          */
-        var pt = '<periodictable><element id="1"><name>Hydrogen</name></element><element id="2"><name>Helium</name></element><element id="3"><name>Lithium</name></element></periodictable>';
-        console.log(pt)
-        console.log(pt)
+        // var pt = '<periodictable><element id="1"><name>Hydrogen</name></element><element id="2"><name>Helium</name></element><element id="3"><name>Lithium</name></element></periodictable>';
+        // console.log(pt)
+        // console.log(pt)  // 经过测试无效
+
+        function test() {
+            $.globalEval('var a = 30')
+            var b = 20
+        }
+        test();
+        console.log(a) // 这个时候,我们可以在全局中找到使用eval方法创建出来的a变量
+            // console.log(b)
+
+        // var script = '\<script\>alert(1)\<\/script\>'
+        // document.head.appendChild(script).parentNode.removeChild(script);
+
+        function test2() {
+            var a = eval;
+            a("var c = 1"); // 我们使用eval赋值的参数进行字符串解析,可以解析出全局的变量
+            window.eval('var d = 2') // 我们直接使用window.eval,也是可以解析出全局的变量的
+            eval('var e = 3') // 我们直接使用eval,却不能解析出全局的变量
+        }
+        test2();
+        console.log(c)
+        console.log(d)
+        console.log(e)
     </script>
 
 </body>
