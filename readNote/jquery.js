@@ -737,17 +737,20 @@
         },
 
         // args is for internal usage only
+        // 不仅可以针对数组或类数组的遍历,还可以对json等对象进行遍历,在外部使用的时候传递两个参数,
         each: function(obj, callback, args) {
             var value,
                 i = 0,
                 length = obj.length,
+                // 判断是否为数组或类数组对象,包括是否为this,因为this也是一个类数组对象
                 isArray = isArraylike(obj);
 
+            // 这是函数的内部的一个判断,args这个变量是并不对外的
             if (args) {
+                // 如果是类数组对象,则走这里,对相应的值进行for循环,
                 if (isArray) {
                     for (; i < length; i++) {
                         value = callback.apply(obj[i], args);
-
                         if (value === false) {
                             break;
                         }
@@ -765,15 +768,19 @@
                 // A special, fast, case for the most common use of each
             } else {
                 if (isArray) {
+                    // 如果是类数组对象,则走这里,对相应的值进行for循环,
                     for (; i < length; i++) {
+                        // 将obj的值逐一传到callback函数中进行执行
                         value = callback.call(obj[i], i, obj[i]);
 
+                        // 在value为false的时候,也就是没有需要传入的值的时候,则跳出这个for循环
                         if (value === false) {
                             break;
                         }
                     }
                 } else {
                     for (i in obj) {
+                        // 当传入值不是类数组对象的时候,则可能为json等,json是没有办法通过for循环遍历到的,只能通过for in循环
                         value = callback.call(obj[i], i, obj[i]);
 
                         if (value === false) {
@@ -786,20 +793,25 @@
             return obj;
         },
 
+        // 对数据操作删除掉左边和右边的空格的操作,trim就是es5的方法,只是jQuery进行了封装而已
         trim: function(text) {
             return text == null ? "" : core_trim.call(text);
         },
 
         // results is for internal usage only
-        // 作用是将类数组对象转化为真正的数组
+        // 作用是将类数组对象转化为真正的数组,字符串,json,对象等等,其实都可以转为真正的数组
+        // 内部使用就是一个参数,外部使用就是两个参数
         makeArray: function(arr, results) {
             var ret = results || [];
 
             if (arr != null) {
+                // 如果是类数组的对象,内部的私有方法仅能判断一个对象,所以使用Object(arr)将其转为对象
                 if (isArraylike(Object(arr))) {
+                    // 使用merge合并数组
                     jQuery.merge(ret,
                         typeof arr === "string" ? [arr] : arr
                     );
+                    // 就是一个数组的push方法
                 } else {
                     core_push.call(ret, arr);
                 }
@@ -808,22 +820,30 @@
             return ret;
         },
 
+        // 数组版的indexOf,就是用来判断传入值是否在数组中,并返回相应的数组出现位置
+        // 需要传入要查询的数组对象,及相应的数组键值,然后返回要查询的数组对象的下标,传入第三个参数的时候表示从什么位置开始查找
         inArray: function(elem, arr, i) {
+            // 
             return arr == null ? -1 : core_indexOf.call(arr, elem, i);
         },
 
+        // 合并数组
         merge: function(first, second) {
             var l = second.length,
                 i = first.length,
                 j = 0;
 
+            // 如果第二个数组的长度有值,那么证明是普通的数组
             if (typeof l === "number") {
                 for (; j < l; j++) {
+                    // 延长first的长度,并进行赋值就好了
                     first[i++] = second[j];
                 }
+                // 否则,则为json等类数组
             } else {
                 // 其实这是一个很精妙的做法,当我们的第二个对象是json对象的时候,就会调用这个同样的方法,所以merge这个方法是可以进行JSON的连接的,同样是从一百来行的时候,因为有这个方法,所以搜索了一下,刚好看到这里
                 while (second[j] !== undefined) {
+                    //对应j进行遍历,相当于将second,也就是第二个值赋给第一个值,最后返回的也是第一个值,这种情况下可以解决传入对象的问题,但是,对象的索引也要为数字类型,并且最好按照0,1 这样排序下去,否则会出现返回的伪数组的index紊乱的情况
                     first[i++] = second[j++];
                 }
             }
@@ -833,11 +853,14 @@
             return first;
         },
 
+        // 过滤新数组,返回callback函数符合条件的数值,这种操作类似于ES5中的filter
+        // 此方法传递两个必选参数和第三个可选参数,第一个是要操作的数组,第二个是回调函数,第三个是一个布尔值,布尔值为真,则返回相应的不符合条件的数组键值组成的数组
         grep: function(elems, callback, inv) {
             var retVal,
                 ret = [],
                 i = 0,
                 length = elems.length;
+            //对第三个传值的类型转换
             inv = !!inv;
 
             // Go through the array, only saving the items

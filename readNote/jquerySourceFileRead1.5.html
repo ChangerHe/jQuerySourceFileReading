@@ -45,7 +45,79 @@
         test2();
         console.log(c)
         console.log(d)
-        console.log(e)
+            // console.log(e)
+
+        var json = {
+            name: 'hello',
+            age: 2
+        }
+        $.each(json, function(i, value) {
+            alert(value) // 遍历出了相应的json键值
+            return false; // 根据jQuery的底层实现原理,我们将返回值设置为false,那么这个时候因为返回的是false,则在jQuery的底层判断中,会有一个这样的操作 if (value === false) {break;} 这就很好理解了,我们将返回值设置为false之后,就会马上跳出这个循环了.
+        })
+
+        console.log($.makeArray({
+            a: 1,
+            b: 2
+        }))
+
+        var a = [1, 2, 3, 4]
+        console.log($.inArray(3, a))
+
+        console.log($.merge(['a', 'b'], ['c', 'd'])) //串联了两个数组,并改变了它们的长度
+        console.log($.merge({
+                5: 'a',
+                1: 'b',
+                length: 2
+            }, ['c', 'd'])) //链接一个对象和一个数组,但是对象的索引必须为顺序的数字,如果为非顺序数字,则会出现索引紊乱的情况
+
+        // ES5中新增的迭代方法的复习
+        /**
+         * ES5共计定义了5个迭代方法,每个方法都接收两个参数:要在每一项上运行的函数和运行该函数的作用域对象,传入这些方法中的函数会接收三个参数:  数组项的值,该项在数组中的位置,数组对象本身
+         */
+
+        var numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1]
+        var everyResult = numbers.every(function(item, index, array) {
+            return item > 2
+        })
+        var filterResult = numbers.filter(function(item, index, array) {
+            return item > 2
+        })
+        var forEachResult = numbers.forEach(function(item, index, array) {
+            return item + 2 // 只有forEach方法是没有返回值的,forEach方法类似于for循环的操作,可以在函数内部对数组进行相应的操作
+        })
+        var mapResult = numbers.map(function(item, index, array) {
+            return item + 2
+        })
+        console.log(everyResult)
+        console.log(filterResult)
+        console.log(forEachResult)
+        console.log(mapResult)
+        console.log(numbers)
+
+        /**  
+         * javascript另外还提供了一些归并方法, 如reduce()  和reduceRight()  
+         *      reduce()方法向前遍历,直到遍历到最后一个对象
+         *      reduceRight() 顾名思义,就是从后面往前面遍历,直到遍历到最后一个对象
+         *          方法接受四个参数: 前一个值  当前值  项的索引  数组对象
+         */
+        var sum = numbers.reduce(function(prev, next, index, arr) {
+            return prev + next;
+        })
+        console.log(sum)
+
+        // 那么现在我们来看一下jQuery中类似的数组方法,类似于filter的方法
+        // 这个函数是有第三个参数的,如果传值为真,则返回相反的匹配数组
+        var arr = $.grep(numbers, function(n, i) {
+            return n > 2
+        }, false)
+        console.log(arr)
+
+        // map这个方法,其实和es5的自带方法是一样的,不过可能考虑到兼容问题,其底层并没有直接使用es5的这个方法
+        var arr1 = $.map(numbers, function(n) {
+            return n + 1
+        })
+        console.log(arr1)
     </script>
 
 </body>
