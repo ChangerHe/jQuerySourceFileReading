@@ -656,9 +656,12 @@
             return jQuery.merge([], parsed.childNodes);
         },
 
+        // 将字符串解析为JSON格式,需要注意的是,当我们解析的时候,需要的键值对的变量也是字符串才可以被成功解析,否则是无法成功解析的
+        // 因为JSON.parse仅能支持到IE9.所以这种情况下,代表已经抛弃了IE9-浏览器了
         parseJSON: JSON.parse,
 
         // Cross-browser xml parsing
+        // 以前比较早的技术,
         parseXML: function(data) {
             var xml, tmp;
             if (!data || typeof data !== "string") {
@@ -666,6 +669,7 @@
             }
 
             // Support: IE9
+            // 在IE9下的情况
             try {
                 tmp = new DOMParser();
                 xml = tmp.parseFromString(data, "text/xml");
@@ -679,6 +683,7 @@
             return xml;
         },
 
+        // 创建一个空函数
         noop: function() {},
 
         // Evaluates a script in a global context
