@@ -118,8 +118,33 @@
             return n + 1
         })
         console.log(arr1)
-    </script>
 
+        var a = {
+            a: 'a',
+            b: 'b',
+            c: 'c'
+        }
+        for (var i in a) { // 使用forin,是可以遍历到对象中的内容的
+            console.log(a[i])
+        }
+
+        var show = function(a, b) {
+            console.log(a);
+            console.log(b);
+            console.log(this)
+        }
+        $.proxy(show, window, 3, 4)()
+
+        // 检测jQuery能否获取到隐藏元素的值
+        $(function() {
+            console.log($('#box').width()) // 100
+            console.log($('#box')[0].offsetWidth) // 当元素设置为隐藏时,则此值为0  
+            console.log($('#box2')[0].offsetWidth) // 当元素设置为隐藏时,则此值为0  
+                // 当然,取不到值是在这个元素display为none的情况下,当我们设置元素的属性  visibility:hidden;position:absolute;display:block;  这个时候就可以使用原生的js获取到相应的值了
+        })
+    </script>
+    <div id="box" style="width: 100px;height: 100px; background: #ccc;display: none;"></div>
+    <div id="box2" style="width: 100px;height: 100px; background: #ccc;visibility:hidden;position:absolute;display:block;"></div>
 </body>
 
 </html>

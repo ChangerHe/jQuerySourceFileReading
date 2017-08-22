@@ -876,6 +876,7 @@
         },
 
         // arg is for internal usage only
+        // 第三个参数是提供给internal(内部)使用的
         map: function(elems, callback, arg) {
             var value,
                 i = 0,
@@ -884,6 +885,7 @@
                 ret = [];
 
             // Go through the array, translating each of the items to their
+            // 如果是数组,则直接使用回调函数逐一调用参数进去执行
             if (isArray) {
                 for (; i < length; i++) {
                     value = callback(elems[i], i, arg);
@@ -894,29 +896,36 @@
                 }
 
                 // Go through every key on the object,
+                // 如果是json等对象,则调用else方法,对回调函数进行处理
             } else {
                 for (i in elems) {
                     value = callback(elems[i], i, arg);
 
                     if (value != null) {
+                        // 逐一将值添加到ret这个数组中
                         ret[ret.length] = value;
                     }
                 }
             }
 
             // Flatten any nested arrays
+            // 将数组返回为一个单一数组,为了避免出现复合数组的情况,所以调用了数组的concat方法,将复合数组连接成为单一数组
             return core_concat.apply([], ret);
         },
 
         // A global GUID counter for objects
+        // 单纯用来计数的jQuery中全局可以使用的变量
         guid: 1,
 
         // Bind a function to a context, optionally partially applying any
         // arguments.
+        // 更改this的指向
         proxy: function(fn, context) {
             var tmp, args, proxy;
 
+            // 如果上下文是一个字符串的话
             if (typeof context === "string") {
+                // 第二个参数因为是字符串,则表示此时进行的是一种简化的写法   $.proxy(obj, 'show') 也就是直接将show在obj的上下文中执行,这样输入的时候,就转化为了 $.proxy(fn[context], context)
                 tmp = fn[context];
                 context = fn;
                 fn = tmp;
@@ -931,10 +940,12 @@
             // Simulated bind
             args = core_slice.call(arguments, 2);
             proxy = function() {
+                // 借用了apply方法,因为apply方法需要在第二个参数中传入数组,所以在后面将arguments借用了Object中的slice方法,使用concat连接,使其转换成了数组
                 return fn.apply(context || this, args.concat(core_slice.call(arguments)));
             };
 
             // Set the guid of unique handler to the same of original handler, so it can be removed
+            // 设置唯一标示,作为事件的相应记录,如果有guid则自加,没有则为其增加一个guid
             proxy.guid = fn.guid = fn.guid || jQuery.guid++;
 
             return proxy;
@@ -942,19 +953,25 @@
 
         // Multifunctional method to get and set values of a collection
         // The value/s can optionally be executed if it's a function
+        // 内部使用,作为多功能的操作,内部使用
+        // 首先 .css的包含的参数 css : return  jQuery.access(this, function(elem, name, value), name, value, arguments.length > 1)
         access: function(elems, fn, key, value, chainable, emptyGet, raw) {
             var i = 0,
                 length = elems.length,
                 bulk = key == null;
 
             // Sets many values
+            // 如果其键值是object类型,则表示必定为json类型,有值,则chainable必定为true
+            // 也就是说,这个时候,css传入的就是一个对象
             if (jQuery.type(key) === "object") {
                 chainable = true;
+                // 对于json, 则必须使用forin进行循环
                 for (i in key) {
                     jQuery.access(elems, fn, i, key[i], true, emptyGet, raw);
                 }
 
                 // Sets one value
+                // 为一组值的情况下
             } else if (value !== undefined) {
                 chainable = true;
 
@@ -962,14 +979,17 @@
                     raw = true;
                 }
 
+                // 如果没有key值
                 if (bulk) {
                     // Bulk operations run against the entire set
+                    // 是字符串的情况
                     if (raw) {
                         fn.call(elems, value);
                         fn = null;
 
                         // ...except when executing function values
                     } else {
+                        // 是函数的情况,则将函数传入相应的值,主要是针对在css后传入了函数的情况
                         bulk = fn;
                         fn = function(elem, key, value) {
                             return bulk.call(jQuery(elem), value);
@@ -977,6 +997,7 @@
                     }
                 }
 
+                // 直接执行这个回调函数的情况
                 if (fn) {
                     for (; i < length; i++) {
                         fn(elems[i], key, raw ? value : value.call(elems[i], i, fn(elems[i], key)));
@@ -993,24 +1014,32 @@
                 length ? fn(elems[0], key) : emptyGet;
         },
 
+        // 获取当前时间,es5提供的相应方法,就是直接使用点now
         now: Date.now,
 
         // A method for quickly swapping in/out CSS properties to get correct calculations.
         // Note: this method belongs to the css module but it's needed here for the support module.
         // If support gets modularized, this method should be moved back to the css module.
+        // 做css的值的交换
+        // 可以获取到隐藏元素的值  其实原理相当于是为这个元素设置了这样的属性
+        // visibility:hidden;position:absolute;display:block;
         swap: function(elem, options, callback, args) {
             var ret, name,
                 old = {};
 
             // Remember the old values, and insert the new ones
+            // 记录之前的每一个样式,并存在old这个对象中
             for (name in options) {
                 old[name] = elem.style[name];
+                // 元素的样式换为新的样式
                 elem.style[name] = options[name];
             }
 
+            // 然后,使用回调函数处理这个属性的值
             ret = callback.apply(elem, args || []);
 
             // Revert the old values
+            // 转换回原来的样式情况
             for (name in options) {
                 elem.style[name] = old[name];
             }
@@ -1048,24 +1077,30 @@
         class2type["[object " + name + "]"] = name.toLowerCase();
     });
 
+    // 判断是否为类数组
     function isArraylike(obj) {
         var length = obj.length,
             type = jQuery.type(obj);
 
+        // 先要判断是否把window传进来了,如果传进来的话会影响到后面的判断,因为window也有可能有length等属性
         if (jQuery.isWindow(obj)) {
             return false;
         }
 
+        // 节点类型为一 ,则必定为元素节点,(扩展:1代表元素节点,2代表属性节点,3代表文本节点),元素节点是类数组,返回true
         if (obj.nodeType === 1 && length) {
             return true;
         }
 
+        // 如果通过自带的type方法判定为数组,则必定为数组,返回true
+        // 如果类型不是函数,且 长度等于0  或者不是函数,且有长度,长度大于一而且可以被遍历(这个时候其实判断的是是不是类似arguments等这些伪数组的)
         return type === "array" || type !== "function" &&
             (length === 0 ||
                 typeof length === "number" && length > 0 && (length - 1) in obj);
     }
 
     // All jQuery objects should point back to these
+    // 下面是sizzle的复杂选择器的实现,涉及到很多的深层次递归等操作
     rootjQuery = jQuery(document);
     /*!
      * Sizzle CSS Selector Engine v1.9.4-pre
@@ -6372,6 +6407,7 @@
 
     jQuery.fn.extend({
         css: function(name, value) {
+            // 首先 .css的包含的参数  jQuery.access(this, function(elem, name, value), name, value, arguments.length > 1)
             return jQuery.access(this, function(elem, name, value) {
                 var styles, len,
                     map = {},
