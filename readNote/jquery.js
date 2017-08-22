@@ -3116,10 +3116,24 @@
      *	stopOnFalse:	interrupt callings when a callback returns false
      *
      */
+    // 执行事件的回调  接受四个配置选项:
+    /**
+     * once 使这个方法的回调只执行一次 (作用到fire)
+     * memory 代表记忆功能,当我们将其参数设置为了'memory' 那么不论我们的fire在哪里调用,都会执行add加进来的所有函数,包括在后面加进来的函数(作用到add)
+     * unique 代表唯一的,不能够执行相同的函数(作用到add)
+     * stopOnFalse 当传入的函数返回值为false的时候,就停止调用该回调函数(作用到for循环)
+     * 当然,上面的参数,可以进行组合  相互之间相互以空格分隔开
+     */
+    // 提供出来的工具接口有
+    /**  
+     * add()
+     * 
+     */
     jQuery.Callbacks = function(options) {
 
         // Convert options from String-formatted to Object-formatted if needed
         // (we check in cache first)
+        // 当我们写的时候,返回空的字符串
         options = typeof options === "string" ?
             (optionsCache[options] || createOptions(options)) :
             jQuery.extend({}, options);
@@ -3141,6 +3155,7 @@
             // Stack of fire calls for repeatable lists
             stack = !options.once && [],
             // Fire callbacks
+            // 调用fire其实就是调用的fireWith  for循环这个list
             fire = function(data) {
                 memory = options.memory && data;
                 fired = true;
@@ -3201,6 +3216,7 @@
                     return this;
                 },
                 // Remove a callback from the list
+                // 对数组进行指定位置上的删除
                 remove: function() {
                     if (list) {
                         jQuery.each(arguments, function(_, arg) {

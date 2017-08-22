@@ -142,6 +142,37 @@
             console.log($('#box2')[0].offsetWidth) // 当元素设置为隐藏时,则此值为0  
                 // 当然,取不到值是在这个元素display为none的情况下,当我们设置元素的属性  visibility:hidden;position:absolute;display:block;  这个时候就可以使用原生的js获取到相应的值了
         })
+
+        // 对回调函数的一些操作
+        // 回调对象其实就是类似于事件绑定的效果,为事件进行绑定,则调用一次,则都会触发
+        var odd = $.Callbacks();
+
+        function aaa() {
+            alert(1)
+        }
+
+        function bbb() {
+            alert(2)
+        }
+        odd.add(aaa)
+        odd.add(bbb)
+        odd.fire();
+
+        // 使用回调函数解决闭包内的函数执行问题
+        var A = $.Callbacks();
+        (function() {
+            function aa() {
+                alert(3)
+            }
+            A.add(aa)
+        })()
+
+        function bb() {
+            alert(4)
+        }
+        A.add(bb)
+        A.fire()
+        A.fire() // 可以重复调用
     </script>
     <div id="box" style="width: 100px;height: 100px; background: #ccc;display: none;"></div>
     <div id="box2" style="width: 100px;height: 100px; background: #ccc;visibility:hidden;position:absolute;display:block;"></div>
