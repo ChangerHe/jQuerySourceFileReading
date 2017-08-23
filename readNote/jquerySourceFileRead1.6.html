@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="jquery.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+        // 关于回调对象在定时器下的使用的复习
+        // var cb = $.Callbacks();
+        // setTimeout(function() {
+        //     alert(1)
+        //     cb.fire()
+        // }, 1000)
+        // cb.add(function() {
+        //     alert(11)
+        // })
+
+        // 关于延迟对象的使用问题
+        // 我们会发现,延迟对象的使用,及其类似于相应的回调函数,因为deferred对象,底层的实现还是基于callbacks对象的
+        // var def = $.Deferred();
+        // setTimeout(function() {
+        //     alert(2)
+        //     def.resolve()
+        // }, 1000)
+        // def.done(function() {
+        //     alert(22)
+        // })
+
+        // 关于deferred对象触发的情况: 因为在延迟对象中,成功和失败均代表触发结束,但触发中代表后面还可以继续触发,因此,仅在触发状态中的情况下,callbacks是没有设置once属性的,也就是没有设置仅触发一次的情况
+        var def = $.Deferred();
+        setInterval(function() {
+            // alert(1)
+            // def.resolve() // 代表已经解决,成功(resolve 解决)
+            // def.reject() // 代表拒绝,也就是失败
+            // def.notify() //代表进度中
+        }, 1000)
+        def.done(function() {
+            alert('done') // 成功
+        }).fail(function() {
+            alert('fail') // 失败
+        }).progress(function() {
+            alert('progress') // 正在进度中
+        })
+    </script>
+
+</body>
+
+</html>

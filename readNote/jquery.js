@@ -3297,11 +3297,16 @@
     };
     jQuery.extend({
 
+        // 延迟对象,对异步的统一管理
+        // 其实最终,还是和之前调用的回调对象有关系
         Deferred: function(func) {
             var tuples = [
                     // action, add listener, listener list, final state
+                    // 代表成功, resolve 和done是存在相应的映射关系的
                     ["resolve", "done", jQuery.Callbacks("once memory"), "resolved"],
+                    // 代表失败, reject和fail之间存在映射关系
                     ["reject", "fail", jQuery.Callbacks("once memory"), "rejected"],
+                    // 代表进行中,notify和progress之间存在映射关系,因为是表示进行中,所以存在连续出发的情况,因此在这个相应的回调中就没写once了.代表可以连续触发
                     ["notify", "progress", jQuery.Callbacks("memory")]
                 ],
                 state = "pending",
@@ -3337,6 +3342,9 @@
                     },
                     // Get a promise for this deferred
                     // If obj is provided, the promise aspect is added to the object
+                    // 通过jQuery.extend这个方法,将promise的方法直接扩展到了Deferred里面
+                    // promise可以看做deferred的一个子集,但是promise中不包含修改状态的方法
+                    // 主要目的还是使用promise这个方法,将当时的环境存起来,避免在后面被修改
                     promise: function(obj) {
                         return obj != null ? jQuery.extend(obj, promise) : promise;
                     }
@@ -3361,6 +3369,7 @@
                         state = stateString;
 
                         // [ reject_list | resolve_list ].disable; progress_list.lock
+                        // disable 代表禁用所有状态
                     }, tuples[i ^ 1][2].disable, tuples[2][2].lock);
                 }
 
