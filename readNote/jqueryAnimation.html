@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+	/**
+	 * 对于jQuery的一些笔记记录
+	 * 		.show()  代表显示元素
+	 * 		.hide()  代表隐藏元素
+	 * 		.sideDown()  代表页面向下卷,初始状态的会计元素需要display为none
+	 * 		.sideUp() 代表页面向上卷,那么这个时候页面就需要先显示出来了
+	 * 		.sideToggle() 表示页面的上卷和下卷的切换
+	 * 对于以上的方法,其实其底层原理都是一样的,先将之前的状态进行保存在变量中,然后执行动画.执行完动画之后.会有一个将之前保存的变量进行赋值的操作
+	 * 		.fadeOut()  动画的淡出
+	 * 		.fadeIn()   动画的淡入
+	 * 		.fadeToggle()  动画的淡入淡出切换
+	 * 以上的方法,都可以传入值,一个是动画的事件,二是动画完成后的操作
+	 * 		对于淡入淡出,还有一个更加好的办法,因为我们在淡入淡出进行切换的时候,往往并不需要它离开整个文档流
+	 * 		那么这个时候,我们可以使用fadeIn的效果,对相应元素进行操作
+	 * 		.fadeIn(duration, opacity, callback)  表示动画的淡入,注意这个参数是要传前面两个必须值的
+	 * 		
+	 */
+	
+	/**
+	 * toggle()  slideToggle()  和  fadeToggle()  三者的比较
+	 * 		.toggle()  作用是切换显示与隐藏的效果,动态效果是从右到左,横向动作.通过display来判断所有匹配元素的可见性
+	 * 		.slideToggle()  作用是切换上下拉卷滚的效果,动态效果从下至上,竖向动作,通过高度变化来切换所有匹配元素的可见性
+	 * 		.fadeToggle()  切换淡入淡出的效果
+	 */
+	
+	/**
+	 * 自定义的动画,需要通过animate自定义动画值来进行实现
+	 * 		同样是执行三秒淡入的动画,我们可以这样写
+	 * 			$(elem).fadeOut(3000)
+	 * 		那么,使用自定义动画,我们也可以这样写
+	 * 			$(elem).animate({
+	 * 				opacity: 0;
+	 * 			}, 3000)
+	 * 	从上面来看,明显animate的动画更复杂了啊,其实animate为我们的动画操作提供了更多的可能,我们可以操作任意css样式的更改,同时,其实fadeOut等这类方法,在底层还是调用的animate这个方法的
+	 * 	语法 .animate(properties [, duration, easing, complete])
+	 * 		animate的参数: 
+	 * 			properties 一个或多个键值的对象,作为css样式的传参,必选项
+	 * 			duration 动画执行的时间
+	 * 			easing 动画运动的算法
+	 * 			complete  动画完成的回调函数
+	 */
+
+	 /**
+	  * 动画的停止
+	  * 	.stop()  不传参,则表示停止当前动画,动画在暂停处继续开始,停止当前执行的动画,开始下一个动画
+	  * 	传参一个,且为true, 则表示顺序调用,每调用一次,则动画会处于队列中,调用stop后,下一个动画立即开始,停止当前元素的所有动画行为,队列里后续动画不会执行
+	  * 	传参两个,且为true,则表示当前动画停止,属性立刻被修改为目标值
+	  */
+	 
+	 /**
+	  * 对于jquery中的each方法,用于对元素进行遍历\
+	  * 	如: $.each(['Changer','he'], function(index, value){
+	  * 		// index 就是索引
+	  * 		// value 就是索引中的值
+	  * 		// 根据回调的参数,可以对前面的键值进行相应操作,如果在回调中返回false,则停止迭代
+	  * 	})
+	  *
+	  * jquery的inArray方法,用于查找某个元素是否存在于数组中,虽然ES5中已经有indexOf方法的支持了,但是为了向下兼容,则使用了这个inArray方法
+	  * 	用法: $.inArray(value, array [, fromIndex])
+	  */
+	</script>
+</body>
+</html>

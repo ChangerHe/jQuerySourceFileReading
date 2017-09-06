@@ -3445,6 +3445,7 @@
             return deferred.promise();
         }
     });
+// support主要针对检测
     jQuery.support = (function(support) {
         var input = document.createElement("input"),
             fragment = document.createDocumentFragment(),
@@ -3453,6 +3454,7 @@
             opt = select.appendChild(document.createElement("option"));
 
         // Finish early in limited environments
+        // 新版的已经去掉了,当不选中type的时候,会为text
         if (!input.type) {
             return support;
         }
