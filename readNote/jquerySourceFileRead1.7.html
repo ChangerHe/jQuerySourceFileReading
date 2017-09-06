@@ -11,33 +11,108 @@
 
 <body>
 
-    <ul>
-        <li>11111</li>
-
-    </ul>
-    <div>
-        <h1></h1>
-        <h2></h2>
-        <h3></h3>
-    </div>
+    <div id="div1" data-miaov-all="miaov"></div>
     <script>
-        console.log(jQuery.core_version)
-        var a = {
-                a: 1,
-                b: 2
+        // // 转驼峰的方法,其实replace后面是可以接受一个回调函数的,函数的参数有 匹配值 匹配括号内的值 匹配的位置下标 匹配到的字符串整体 
+        // var a = '-webkit-transform'
+        // var b = a.replace(/-([\da-z])/gi, function(all, letter, c, d, e) {
+        //     console.log(all, letter, c, d, e)
+        //     return letter.toUpperCase();
+        // })
+        // console.log(b)
+
+        // name = '"a", "b"';
+        // console.log(name.replace(/"([^"]*)"/g, "'$1'"));
+
+        // // 使用HTML5的新方法获取标签的项的值
+        // console.log($('#div1').get(0).dataset.miaovAll)
+
+        // // queue的工具方法
+        // function aaa() {
+        //     alert(1)
+        // }
+
+        // function bbb() {
+        //     alert(2)
+        // }
+
+        // // $.queue(document, 'q1', aaa)
+        // // $.queue(document, 'q1', bbb)
+
+        // // console.log($.queue(document, 'q1'))
+
+        // // 将数组的第一项进行出队操作
+        // $.dequeue(document, 'q1')
+
+        // // 调用两次,则会对下面的函数进行出队操作
+        // $.dequeue(document, 'q1')
+
+
+        // $(document).queue('q2', aaa)
+        // $(document).queue('q2', bbb)
+
+        // $(document).dequeue('q2')
+        // $(document).dequeue('q2')
+
+        // 那么queue和dequeue的作用是什么
+        // 当我们使用多个animate绑定到同一个元素上时,我们会发现这些动画是按照顺序进行执行的,而并不想原生的方法,是同时执行的.这个里面就用到了queue和dequeue的方法了
+
+        // 队列名如果要进入指定的队列中的话,需要用到fx作为队列名
+
+        // 队列的操作有入队,那么同时必须要有出队的操作,不然会卡在那里不动了
+
+        // queue和使用animate之后调用回调函数的最大区别是,入队出队操作可控性要强很多,可以实现很多复杂的动画
+
+        // var aa = 1;
+
+        // function f2() {
+        //     alert(aa)
+        // }
+
+        // function f1(fn) {
+        //     var aa = 2
+        //     return fn()
+        // }
+        // f1(f2)
+
+
+        // var aaa = 1
+        // var obj = {
+        //     aaa: 2,
+        //     fn1: function() {
+        //         alert(aaa)
+        //     }
+        // }
+        // obj.fn1()
+
+        var a = 1;
+
+        function f1() {
+            var a = 2
+            return function f2() {
+                alert(a)
             }
-            // console.log(a.length)
-        var str = '<li>1</li><li>2</li><li>3</li>'
-        var strArr = $.parseHTML(str)
-        console.log(strArr)
-        $(strArr).appendTo($('ul'))
+        }
+        var x = f1()
+        var a = 3
+        x()
 
-        $('<li></li>', {
-            title: '1111',
-            value: 2222
-        }).appendTo($('ul'))
+        // console.log(f1())
+
+        var aa = 1
+            // var j = {
+            //     aa: 2,
+            //     fn: function() {
+            //         alert(aa)
+            //     }
+            // }
+        var j = new Object()
+        j.aa = 2
+        j.fn = function() {
+            alert(aa)
+        }
+        j.fn()
     </script>
-
 </body>
 
 </html>

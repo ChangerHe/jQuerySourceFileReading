@@ -3445,7 +3445,7 @@
             return deferred.promise();
         }
     });
-// support主要针对检测
+    // support主要针对检测, 后面会有hooks,也就是勾子机制,主要用于解决兼容性问题,这个support主要是做兼容性的检测
     jQuery.support = (function(support) {
         var input = document.createElement("input"),
             fragment = document.createDocumentFragment(),
@@ -3454,7 +3454,7 @@
             opt = select.appendChild(document.createElement("option"));
 
         // Finish early in limited environments
-        // 新版的已经去掉了,当不选中type的时候,会为text
+        // 新版的已经去掉了,当input不设置type的时候,会为text
         if (!input.type) {
             return support;
         }
@@ -3467,20 +3467,24 @@
 
         // Must access the parent to make an option select properly
         // Support: IE9, IE10
+        // 在IE下,我们使用下拉菜单select的时候,默认第一个是不选中的,这里主要是解决这个问题
         support.optSelected = opt.selected;
 
         // Will be defined later
+        // 先定义,然后等整个dom加载之后再执行
         support.reliableMarginRight = true;
         support.boxSizingReliable = true;
         support.pixelPosition = false;
 
         // Make sure checked status is properly cloned
         // Support: IE9, IE10
+        // 解决在IE 9 10 下克隆出来的选项框不会和之前的复选框一样被选中的问题
         input.checked = true;
         support.noCloneChecked = input.cloneNode(true).checked;
 
         // Make sure that the options inside disabled selects aren't marked as disabled
         // (WebKit marks them as disabled)
+        // 解决下拉菜单被禁止后,子项也被禁止的问题
         select.disabled = true;
         support.optDisabled = !opt.disabled;
 
@@ -3503,13 +3507,17 @@
 
         // Support: Firefox, Chrome, Safari
         // Beware of CSP restrictions (https://developer.mozilla.org/en/Security/CSP)
+        // 让Firefox, Chrome, Safari支持 focusin 这个事件,这个事件与focus事件最大不同是, focusin可以进行冒泡
+        // 对应的事件是onfocusout
         support.focusinBubbles = "onfocusin" in window;
 
+        // 
         div.style.backgroundClip = "content-box";
         div.cloneNode(true).style.backgroundClip = "";
         support.clearCloneStyle = div.style.backgroundClip === "content-box";
 
         // Run tests that need a body at doc ready
+        // 检测需要在dom加载完之后的内容
         jQuery(function() {
             var container, marginDiv,
                 // Support: Firefox, Android 2.3 (Prefixed box-sizing versions).
@@ -3518,9 +3526,11 @@
 
             if (!body) {
                 // Return for frameset docs that don't have a body
+                // 框架可能没有body,这个时候则直接return
                 return;
             }
 
+            // 添加检测的元素,然后left为-9999,让用户看不到
             container = document.createElement("div");
             container.style.cssText = "border:0;width:0;height:0;position:absolute;top:0;left:-9999px;margin-top:1px";
 
@@ -3532,11 +3542,13 @@
 
             // Workaround failing boxSizing test due to offsetWidth returning wrong value
             // with some non-1 values of body zoom, ticket #13543
+            // zoom表示页面的显示比例
             jQuery.swap(body, body.style.zoom != null ? { zoom: 1 } : {}, function() {
                 support.boxSizing = div.offsetWidth === 4;
             });
 
             // Use window.getComputedStyle because jsdom on node.js will break without it.
+            // nodejs是没有这个东西的
             if (window.getComputedStyle) {
                 support.pixelPosition = (window.getComputedStyle(div, null) || {}).top !== "1%";
                 support.boxSizingReliable = (window.getComputedStyle(div, null) || { width: "4px" }).width === "4px";
@@ -3574,6 +3586,9 @@
         rbrace = /(?:\{[\s\S]*\}|\[[\s\S]*\])$/,
         rmultiDash = /([A-Z])/g;
 
+    // data类似于prop和attr,但是data更适合为标签增加一个占内存的属性
+    // 主要的作用是防止对象和标签之间的相互引用,从而引发内存泄漏的问题
+    // 内部的主要作用原因是,在内部使用了一个cache的对象,将相应的data对象缓存起来,从而实现避免内存泄露的问题
     function Data() {
         // Support: Android < 4,
         // Old WebKit does not have Object.preventExtensions/freeze method,
@@ -3584,6 +3599,7 @@
             }
         });
 
+        // 生成一个绝对唯一的数字,(jQuery.expando已经是一个随机数了)
         this.expando = jQuery.expando + Math.random();
     }
 
@@ -3601,6 +3617,7 @@
     };
 
     Data.prototype = {
+        // 将对象和映射结合在一起
         key: function(owner) {
             // We can accept data for non-element nodes in modern browsers,
             // but we should not, see #8335.
@@ -3892,6 +3909,7 @@
         // If nothing was found internally, try to fetch any
         // data from the HTML5 data-* attribute
         if (data === undefined && elem.nodeType === 1) {
+            // 将链接的状态转为横杠显示的方式,从之前的驼峰方式
             name = "data-" + key.replace(rmultiDash, "-$1").toLowerCase();
             data = elem.getAttribute(name);
 
@@ -3914,17 +3932,24 @@
         }
         return data;
     }
+
+    // 对jQuery的队列的管理
+    // 这个是queue的工具方法
+    // 类似于数组中的push和shift操作
     jQuery.extend({
         queue: function(elem, type, data) {
             var queue;
 
             if (elem) {
+                // 写type的类型,不写的话默认就是'fx'
                 type = (type || "fx") + "queue";
                 queue = data_priv.get(elem, type);
 
                 // Speed up dequeue by getting out quickly if this is just a lookup
+                // 如果存在第三个参数
                 if (data) {
                     if (!queue || jQuery.isArray(data)) {
+                        // 没有就创建,有就push
                         queue = data_priv.access(elem, type, jQuery.makeArray(data));
                     } else {
                         queue.push(data);
@@ -3980,6 +4005,8 @@
         }
     });
 
+
+    // 这个是在prototype上扩展的实例方法
     jQuery.fn.extend({
         queue: function(type, data) {
             var setter = 2;
@@ -4002,6 +4029,7 @@
                     // ensure a hooks for this queue
                     jQuery._queueHooks(this, type);
 
+                    // 针对animate运动,判定是否出队
                     if (type === "fx" && queue[0] !== "inprogress") {
                         jQuery.dequeue(this, type);
                     }
